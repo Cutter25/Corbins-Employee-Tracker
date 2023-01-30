@@ -21,7 +21,7 @@ const db = mysql.createConnection(
 );
 
 // Questions for user
-function employeeQuestions () {
+function employeeQuestions() {
     inquirer.prompt([
             {
                 type:'list',
@@ -69,4 +69,6 @@ function employeeQuestions () {
                 buildTeam()
         }
     })
-}
+};
+
+employeeQuestions();
