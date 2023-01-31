@@ -20,6 +20,14 @@ const db = mysql.createConnection(
     console.log('Successfully connected to employee database')
 );
 
+db.connect(function (err) {
+    if (err) throw err;
+    else {
+        employeeQuestions();
+        console.log('Connected!');
+    }
+});
+
 // Questions for user
 function employeeQuestions() {
     inquirer.prompt([
@@ -42,35 +50,91 @@ function employeeQuestions() {
         switch (userChoice.action) {
             case 'View All Departments':
                 // <-------- EDIT THESE CALLBACKS WHEN THEY"RE DONE!!!!! --------->
-                engineerQuestions()
+                viewAllDepartments();
                 break;
             case 'View All Roles': 
-                internQuestions()
+                viewAllRoles();
                 break;
             case 'View All Employees': 
-                internQuestions()
+                viewAllEmployees();
                 break;
             case 'Add A Department': 
-                internQuestions()
+                addDepartment();
                 break;
             case 'Add A Role': 
-                internQuestions()
+                addRole();
                 break;
             case 'Add An Employee': 
-                internQuestions()
+                addEmployee();
                 break;
             case 'Update Employee Role': 
-                internQuestions()
+                updateAnEmployee();
                 break;
             case 'Finish': 
-                internQuestions()
+                finish();
                 break;
             default:
-                buildTeam()
-        }
-    })
+                finish();
+        };
+    });
 };
 
+function viewAllDepartments() {
+    console.log('Here are your departments!');
+
+    var query = `SELECT * from department;`
+
+    db.query(query, function(err, res) {
+        console.table(res);
+
+        employeeQuestions();
+    });
+};
+
+function viewAllRoles() {
+    console.log('Here are all possible job positions!');
+
+    var query = `SELECT
+        role.id, 
+        role.title,
+        role.salary,
+        department FROM role 
+        JOIN department on role.department_id = department.id;`
+
+    db.query(query, function(err, res){
+        console.table(res);
+
+        employeeQuestions();
+    });
+};
+
+function viewAllEmployees() {
+    console.log('Here are all of your employees!');
+
+    var query = `SELECT 
+        e.id, 
+        e.first_name, 
+        e.last_name, 
+        r.title, 
+        d.department AS department, 
+        r.salary, 
+        CONCAT(m.first_name, ' ', 
+        m.last_name) AS manager
+        FROM employee e
+        LEFT JOIN role r
+        ON e.role_id = r.id
+        LEFT JOIN department d
+        ON d.id = r.department_id
+        LEFT JOIN employee m
+        ON m.id = e.manager_id`
+
+    db.query(query, function(err, res){
+        if (err) throw err;
+        console.table(res);
+
+        employeeQuestions();
+    });
+};
 
 
 employeeQuestions();
