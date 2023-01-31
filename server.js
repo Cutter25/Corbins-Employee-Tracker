@@ -1,8 +1,8 @@
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
+const table = require('console.table');
 
-const PORT = process.env.PORT || 3001;
 const app = express();
 
 // Express middleware
@@ -21,15 +21,15 @@ const db = mysql.createConnection(
 );
 
 db.connect(function (err) {
-    if (err) throw err;
+    if (err) console.log(err);
     else {
-        employeeQuestions();
+        employerQuestions();
         console.log('Connected!');
     }
 });
 
 // Questions for user
-function employeeQuestions() {
+function employerQuestions() {
     inquirer.prompt([
             {
                 type:'list',
@@ -87,7 +87,7 @@ function viewAllDepartments() {
     db.query(query, function(err, res) {
         console.table(res);
 
-        employeeQuestions();
+        employerQuestions();
     });
 };
 
@@ -104,7 +104,7 @@ function viewAllRoles() {
     db.query(query, function(err, res){
         console.table(res);
 
-        employeeQuestions();
+        employerQuestions();
     });
 };
 
@@ -132,9 +132,45 @@ function viewAllEmployees() {
         if (err) throw err;
         console.table(res);
 
-        employeeQuestions();
+        employerQuestions();
     });
 };
 
+function addDepartment() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'What department do you want to add?'
+        }
+    ]).then (function(answer) {
+        var query = `INSERT INTO department SET?`
+        db.query(query, {
+            department:answer.department
+        },
+        function (err, res){
+            if (err) throw err;
+            console.log("Department Added!");
 
-employeeQuestions();
+            employerQuestions();
+        });
+    });
+};
+
+function addRole() {
+
+};
+
+function addEmployee() {
+
+};
+
+function updateAnEmployee() {
+
+};
+
+function finish() {
+
+};
+
+employerQuestions();
