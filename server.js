@@ -12,9 +12,9 @@ app.use(express.json());
 // Creating database connection
 const db = mysql.createConnection(
     {
-        host: 'localhost',
+        host: '127.0.0.1',
         user: 'root',
-        password: '0325',
+        password: 'SQL0325!',
         database: 'employee_db'
     },
     console.log('Successfully connected to employee database')
