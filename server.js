@@ -1,15 +1,9 @@
-const express = require('express');
-const mysql = require('mysql2');
-const inquirer = require('inquirer');
-require('console.table');
-
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+const mysql = require("mysql2");
+const inquirer = require("inquirer");
+require("console.table");
 
 // Creating database connection
+
 const db = mysql.createConnection(
     {
         host: '127.0.0.1',
@@ -17,14 +11,14 @@ const db = mysql.createConnection(
         password: 'SQL0325!',
         database: 'employee_db'
     },
-    console.log('Successfully connected to employee database')
+    console.log('Connecting to employee database')
 );
 
 db.connect(function (err) {
     if (err) console.log(err);
     else {
-        employerQuestions();
         console.log('Connected!');
+        employerQuestions();
     }
 });
 
@@ -370,5 +364,3 @@ function finalizeEmployeeUpdate(whichEmployee, whichRole) {
 function finish() {
     connection.end();
 };
-
-employerQuestions();
