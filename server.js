@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const table = require('console.table');
+require('console.table');
 
 const app = express();
 
@@ -79,6 +79,8 @@ function employerQuestions() {
     });
 };
 
+// View all departments
+
 function viewAllDepartments() {
     console.log('Here are your departments!');
 
@@ -91,6 +93,8 @@ function viewAllDepartments() {
     });
 };
 
+// View all roles
+
 function viewAllRoles() {
     console.log('Here are all possible job positions!');
 
@@ -102,11 +106,14 @@ function viewAllRoles() {
         JOIN department on role.department_id = department.id;`
 
     db.query(query, function(err, res){
+        if (err) throw err;
         console.table(res);
 
         employerQuestions();
     });
 };
+
+// View all employees
 
 function viewAllEmployees() {
     console.log('Here are all of your employees!');
@@ -136,17 +143,19 @@ function viewAllEmployees() {
     });
 };
 
+// Add a department to employee_db
+
 function addDepartment() {
     inquirer.prompt([
         {
             type: 'input',
-            name: 'department',
+            name: 'addADepartment',
             message: 'What department do you want to add?'
         }
     ]).then (function(answer) {
         var query = `INSERT INTO department SET?`
         db.query(query, {
-            department:answer.department
+            addADepartment:answer.department
         },
         function (err, res){
             if (err) throw err;
@@ -157,12 +166,65 @@ function addDepartment() {
     });
 };
 
-function addRole() {
+// Add role to employee_db
 
+function addRole() {
+    var query = `SELECT 
+    department.department, 
+    department.id
+    FROM department`
+
+    db.query(query, function(err, res){
+        if (err) throw err;
+        const departmentOptions = res.map(({ id, department }) => ({
+            value: id, name: `${department}`
+          }));
+          console.table(res);
+
+        roleQuestions(departmentOptions);
+    });
+};
+
+roleQuestions(departmentOptions) {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'departmentChoice',
+            message: 'which department will this role be added to?',
+            choices: departmentOptions
+        },
+        {
+            type: 'input',
+            name: 'roleTitle',
+            message: 'What shall this role be called?'
+        },
+        {
+            type: 'input',
+            name: 'roleSalary',
+            message: 'How much will this job make per year?'
+        },
+    ])
+    .then(function(answer) {
+        var query = `INSERT INTO role SET ?`
+        
+        db.query(query, {
+            title: answer.roleRitle,
+            salary: answer.roleSalary,
+            department_id: answer.departmentChoice
+        },
+        function (err, res) {
+            if (err) throw err;
+    
+            console.table(res);
+            console.log("Role Created!");
+    
+            employerQuestions();
+        });
+    });
 };
 
 function addEmployee() {
-
+    
 };
 
 function updateAnEmployee() {
@@ -170,7 +232,7 @@ function updateAnEmployee() {
 };
 
 function finish() {
-
+    connection.end();
 };
 
 employerQuestions();
