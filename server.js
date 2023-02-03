@@ -185,7 +185,7 @@ function addRole() {
     });
 };
 
-roleQuestions(departmentOptions) {
+function roleQuestions(departmentOptions) {
     inquirer.prompt([
         {
             type: 'list',
@@ -216,16 +216,74 @@ roleQuestions(departmentOptions) {
             if (err) throw err;
     
             console.table(res);
-            console.log("Role Created!");
+            console.log("Role created and added successfully!");
     
             employerQuestions();
         });
     });
 };
 
+// Add employee to employee_db
+
 function addEmployee() {
-    
+    var query = `SELECT id, title, salary FROM role`
+
+    db.query(query, function(err, res)  {
+        if (err) throw err
+
+        const employeeOptions = res.map(({ id, title, salary })=>({
+            value: id, name:`${id} ${title} $${salary}`
+        }));
+
+        employeeQuestions(employeeOptions);
+
+    });
 };
+
+function employeeQuestions(employeeOptions) {
+    inquirer.prompt([
+        {
+            type:"input",
+            name:"firstName",
+            message:"What is the employee's first name?"
+        },
+        {
+            type:"input",
+            name:"lastName",
+            message:"What is the employee's last name?"
+        },
+        {
+            type:"list",
+            name:"role",
+            message:"What is the employee's role in the company?",
+            choices: employeeOptions
+        },
+        {
+            type:"input",
+            name:"manager",
+            message:"Who is the emploee's manager?"
+        },
+    ])
+    .then(function(answer){
+        var query = `INSERT INTO employee SET ?`
+
+        db.query(query, 
+          {
+          first_name: answer.firstName,
+          last_name: answer.lastName,
+          role_id: answer.role,
+          manager_id: answer.manager,
+          },
+        function (err, res){
+          if (err) throw err;
+    
+          console.log("Employee created and added successfully!");
+
+          employerQuestions();
+        });
+    });
+};
+
 
 function updateAnEmployee() {
 
