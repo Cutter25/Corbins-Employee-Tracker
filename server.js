@@ -18,7 +18,9 @@ db.connect(function (err) {
     if (err) console.log(err);
     else {
         console.log('Connected!');
+
         employerQuestions();
+
     }
 });
 
@@ -362,6 +364,13 @@ function finalizeEmployeeUpdate(whichEmployee, whichRole) {
       });
 };
 
+// Finish function 
+
 function finish() {
-    connection.end();
+    db.end(function(err) {
+        if (err) {
+          return console.log('error:' + err.message);
+        }
+        console.log('Have a good day boss!');
+    });
 };
