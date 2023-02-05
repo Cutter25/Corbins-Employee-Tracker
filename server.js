@@ -149,10 +149,12 @@ function addDepartment() {
     ]).then (function(answer) {
         var query = `INSERT INTO department SET?`
         db.query(query, {
-            addADepartment:answer.department
+            department: answer.addADepartment
         },
         function (err, res){
-            if (err) throw err;
+            if (err) {
+                console.log(err);
+            };
             console.log("Department Added!");
 
             employerQuestions();
@@ -202,7 +204,7 @@ function roleQuestions(departmentOptions) {
         var query = `INSERT INTO role SET ?`
         
         db.query(query, {
-            title: answer.roleRitle,
+            title: answer.roleTitle,
             salary: answer.roleSalary,
             department_id: answer.departmentChoice
         },
@@ -255,7 +257,7 @@ function employeeQuestions(employeeOptions) {
         {
             type:"input",
             name:"manager",
-            message:"Who is the emploee's manager?"
+            message:"What is the ID of the employee's manager?"
         },
     ])
     .then(function(answer){
@@ -300,7 +302,6 @@ function updateAnEmployee() {
         })); 
 
         console.table(res);
-        console.log("employeeArray To Update!\n")
     
         whatRole(whichEmployee);
 
